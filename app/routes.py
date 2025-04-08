@@ -15,7 +15,7 @@ def get_carros():
 @api_bp.route('/carros', methods=['POST'])
 def add_carros():
     data = request.json
-    novo = Carro(nome=data['nome'], marca=data['marca'])
+    novo = Carro(modelo=data['modelo'], marca=data['marca'])
     db.session.add(novo)
     db.session.commit()
     return carro_schema.jsonify(novo), 201
@@ -24,3 +24,19 @@ def add_carros():
 def get_carro(id):
     carro = Carro.query.get_or_404(id)
     return carro_schema.jsonify(carro)
+
+@api_bp.route('/carros/<int:id>', methods=['PUT'])
+def update_carro(id):
+    carro = Carro.query.get_or_404(id)
+    data = request.json
+    carro.modelo = data['modelo']
+    carro.marca = data['marca']
+    db.session.commit()
+    return carro_schema.jsonify(carro)
+
+@api_bp.route('/carros/<int:id>', methods=['DELETE'])
+def delete_carro(id):
+    carro = Carro.query.get_or_404(id)
+    db.session.delete(carro)
+    db.session.commit()
+    return '', 204
