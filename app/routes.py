@@ -5,30 +5,34 @@ from .schemas import CarroSchema
 from . import db
 
 api_bp = Blueprint('api', __name__)
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+
 carro_schema = CarroSchema()
 carros_schema = CarroSchema(many=True)
 
-@api_bp.route('/login', methods=['POST'])
-def login():
-    data = request.json()
+@auth_bp.route('/login', methods=['POST'])
+def login():    #Gerando autenticação JWT 
+    data = request.json
     username = data.get('username')
     password = data.get('password')
 
     user = db.session.query(User).filter_by(username=username).first()
 
     if user and user.password == password:
-        acess_token = create_access_token(identity=user.id)
+        acess_token = create_access_token(identity=str(user.id))
         return jsonify(acess_token=acess_token), 200
     return jsonify({"msg": "Usuário ou senha inválido"}), 401
 
 @api_bp.route('/carros', methods=['GET'])
 @jwt_required()
-def get_carros():
+def get_carros():   #Listar todos os carros
     carros = Carro.query.all()
-    return carros_schema.jsonify(carros)
+    resultado = carros_schema.dump(carros)
+    return jsonify(resultado)
 
 @api_bp.route('/carros', methods=['POST'])
-def add_carros():
+@jwt_required()
+def add_carros():   #Criar carro novo
     data = request.json
     novo = Carro(modelo=data['modelo'], marca=data['marca'])
     db.session.add(novo)
@@ -36,12 +40,14 @@ def add_carros():
     return carro_schema.jsonify(novo), 201
 
 @api_bp.route('/carros/<int:id>', methods=['GET'])
-def get_carro(id):
+@jwt_required()
+def get_carro(id):  #Buscar carro por ID
     carro = Carro.query.get_or_404(id)
     return carro_schema.jsonify(carro)
 
 @api_bp.route('/carros/<int:id>', methods=['PUT'])
-def update_carro(id):
+@jwt_required()
+def update_carro(id):   #Atualizar carro por ID
     carro = Carro.query.get_or_404(id)
     data = request.json
     carro.modelo = data['modelo']
@@ -50,7 +56,8 @@ def update_carro(id):
     return carro_schema.jsonify(carro)
 
 @api_bp.route('/carros/<int:id>', methods=['DELETE'])
-def delete_carro(id):
+@jwt_required()
+def delete_carro(id): #Deletar carro por ID
     carro = Carro.query.get_or_404(id)
     db.session.delete(carro)
     db.session.commit()
