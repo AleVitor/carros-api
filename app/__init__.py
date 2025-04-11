@@ -21,5 +21,7 @@ def create_app():
     app.register_blueprint(api_bp)
     app.register_blueprint(auth_bp)
 
-
+    from app.rotas.admin_routes import admin_bp
+    app.register_blueprint(admin_bp)
+    
     return app
