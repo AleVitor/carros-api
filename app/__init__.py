@@ -17,11 +17,11 @@ def create_app():
     db.init_app(app)
     ma.init_app(app)
 
-    from .routes import api_bp, auth_bp
-    app.register_blueprint(api_bp)
+    from .auth import auth_bp
     app.register_blueprint(auth_bp)
 
-    from app.rotas.admin_routes import admin_bp
+    from .routes import api_bp, admin_bp
+    app.register_blueprint(api_bp)
     app.register_blueprint(admin_bp)
     
     return app
