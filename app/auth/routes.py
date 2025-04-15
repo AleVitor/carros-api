@@ -13,6 +13,8 @@ def login():    #Gerando autenticação JWT
     user = db.session.query(User).filter_by(username=username).first()
 
     if user and user.password == password:
-        acess_token = create_access_token(identity=str(user.id))
+        #Incluindo cargo no payload
+        additional_claims = {"role": user.role}
+        acess_token = create_access_token(identity=str(user.id), additional_claims=additional_claims)
         return jsonify(acess_token=acess_token), 200
     return jsonify({"msg": "Usuário ou senha inválido"}), 401

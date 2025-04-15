@@ -7,7 +7,6 @@ from app.auth.decorators import role_required
 from app import db
 
 @admin_bp.route('/carros', methods=['POST'])
-@jwt_required()
 @role_required('admin')
 def add_carros():
     data = request.json
@@ -17,7 +16,6 @@ def add_carros():
     return carro_schema.jsonify(novo), 201
 
 @admin_bp.route('/carros/<int:id>', methods=['PUT'])
-@jwt_required()
 @role_required('admin')
 def update_carro(id):   #Atualizar carro por ID
     carro = Carro.query.get_or_404(id)
@@ -28,7 +26,6 @@ def update_carro(id):   #Atualizar carro por ID
     return carro_schema.jsonify(carro)
 
 @admin_bp.route('/carros/<int:id>', methods=['DELETE'])
-@jwt_required()
 @role_required('admin')
 def delete_carro(id): #Deletar carro por ID
     carro = Carro.query.get_or_404(id)
