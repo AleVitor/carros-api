@@ -14,3 +14,6 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+    
+class RefreshToken(db.Model):
+    __tablename__ = "refresh_tokens"
